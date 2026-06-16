@@ -1,0 +1,14 @@
+{
+  "name": "rooquiz",
+  "owner": {
+    "name": "RooQuiz"
+  },
+  "description": "RooQuiz tools for Claude — build shareable assessments with AI.",
+  "plugins": [
+    {
+      "name": "rooquiz-tools",
+      "source": "./plugins/rooquiz-tools",
+      "description": "Create shareable RooQuiz preview assessments (quiz, scorecard, personality/outcome test, random quiz) — no account or API key required."
+    }
+  ]
+}
