@@ -21,7 +21,15 @@ The agent builds the assessment and replies with a link like `https://quizster.a
 
 ## Use with any other agent
 
-The skill needs no special runtime. Point your agent at [`SKILL.md`](plugins/rooquiz-tools/skills/create-preview-quiz/SKILL.md) — paste it into context, drop it into your agent's skills/instructions directory, or fetch it from this repo. It documents the full request format, scenes, scoring rules, and copy-paste examples. Anything that can issue an HTTP `POST` — a coding agent's fetch tool, a script, `curl`, Postman — can create a preview.
+Install it with the [`skills`](https://github.com/vercel-labs/skills) CLI (works with Cursor, Windsurf, and any agent the CLI supports):
+
+```bash
+npx skills add rooquiz/rooquiz-skills
+```
+
+> Replace `rooquiz` with your GitHub org/username if you forked this repo.
+
+Or skip the tooling entirely: the skill needs no special runtime. Point your agent at [`SKILL.md`](skills/create-preview-quiz/SKILL.md) — paste it into context, drop it into your agent's skills/instructions directory, or fetch it from this repo. It documents the full request format, scenes, scoring rules, and copy-paste examples. Anything that can issue an HTTP `POST` — a coding agent's fetch tool, a script, `curl`, Postman — can create a preview.
 
 ## What's inside
 
@@ -33,7 +41,9 @@ The skill needs no special runtime. Point your agent at [`SKILL.md`](plugins/roo
 
 The skill `POST`s your assessment JSON to RooQuiz's open preview endpoint (`https://preview.rooquiz.com/api/preview-forms`) and builds a link to open it on `quizster.app`. It's a thin, transparent client — no credentials, just an HTTP request. Previews are temporary (~1 hour); recreate the assessment in RooQuiz to keep it permanently. The full field schema, scenes, scoring rules, and examples live in the skill itself:
 
-- [`create-preview-quiz` skill](plugins/rooquiz-tools/skills/create-preview-quiz/SKILL.md)
+- [`create-preview-quiz` skill](skills/create-preview-quiz/SKILL.md)
+
+The same skill is published in two layouts that must stay in sync: [`skills/create-preview-quiz/SKILL.md`](skills/create-preview-quiz/SKILL.md) (for the `skills` CLI and generic agents) and [`plugins/rooquiz-tools/skills/create-preview-quiz/SKILL.md`](plugins/rooquiz-tools/skills/create-preview-quiz/SKILL.md) (for the Claude Code plugin).
 
 ## Links
 
