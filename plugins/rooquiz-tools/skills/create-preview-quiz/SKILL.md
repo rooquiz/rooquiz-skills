@@ -24,9 +24,18 @@ Use it when someone wants to quickly build, try, or share a quiz / assessment / 
 
 Override the env vars only when targeting a self-hosted RooQuiz deployment; otherwise the defaults work as-is.
 
-### Create it with curl
+### Create it
 
-Write the assessment JSON to a temp file, then POST it. There is no auth — `Content-Type` is the only header needed:
+Send one HTTP request. There is no auth — `Content-Type: application/json` is the only required header. Use whatever HTTP client your environment has (an agent's built-in fetch/HTTP tool, `curl`, `requests`, `fetch`, Postman, …):
+
+```http
+POST https://preview.rooquiz.com/api/preview-forms
+Content-Type: application/json
+
+<the assessment JSON as the raw request body>
+```
+
+For example, with `curl` (write the JSON to a file first, or inline it with `--data`):
 
 ```bash
 curl -sS -X POST https://preview.rooquiz.com/api/preview-forms \

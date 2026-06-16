@@ -1,6 +1,6 @@
 {
   "name": "rooquiz-tools",
-  "description": "RooQuiz authoring tools for Claude — create shareable preview assessments by asking in natural language.",
+  "description": "RooQuiz authoring tools for AI agents — create shareable preview assessments by asking in natural language.",
   "version": "1.0.0",
   "author": {
     "name": "RooQuiz"

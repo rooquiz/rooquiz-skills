@@ -3,7 +3,7 @@
   "owner": {
     "name": "RooQuiz"
   },
-  "description": "RooQuiz tools for Claude — build shareable assessments with AI.",
+  "description": "RooQuiz tools for AI agents — build shareable assessments by asking in natural language.",
   "plugins": [
     {
       "name": "rooquiz-tools",
