@@ -138,6 +138,14 @@ Optional shared props: `required`, `description`, `explain`, `hidden`, `activeCo
 
 Levels may carry a `cta` (results-page button): `{ enabled, type: "link", text, url, newWindow }`. When enabled, `text` and `url` are required, and `url` must be an `http`/`https` link. `summaryTemplate` defaults to a built-in template if omitted.
 
+## Common mistakes
+
+These wrong patterns get reached for out of habit; the server rejects them with HTTP 400. The formats above are correct — match them exactly.
+
+- **Option lists are `choices`, never `options`.** Every choice question uses `"choices": [{ "code": "a", "value": "Label" }]`. There is no `options` key.
+- **Scoring is a field-level array, not a value nested inside each choice.** `outcomeScoring` / `partialScoring` / `correctAnswer` sit next to `choices` on the field. Correct: `"outcomeScoring": [{ "value": "a", "outcomes": [{ "code": "type1" }] }]`. Wrong: putting it on a choice, e.g. `{ "code": "a", "value": "…", "outcomeScoring": { "type1": 1 } }`.
+- **`report.overallAnalysis` is required in every scene, including `outcome`** — give it at least a `title`. Outcome result types go in a *separate* `report.outcomeAnalysis.outcomes`, and every `outcomes[].code` referenced from a field's `outcomeScoring` must be defined there.
+
 ## Complete examples
 
 ### quiz (right/wrong)
