@@ -1,6 +1,6 @@
 ---
 name: create-preview-quiz
-description: Create a shareable RooQuiz preview assessment — a quiz, scorecard, personality/outcome test, or random quiz — and get a link to open in the browser. No account, login, or API key required. Use this when someone wants to quickly build, try out, or share a quiz, assessment, test, personality quiz, or scored questionnaire and needs a working preview link.
+description: Create a shareable RooQuiz preview assessment — a quiz, scorecard, or personality/outcome test — and get a link to open in the browser. No account, login, or API key required. Use this when someone wants to quickly build, try out, or share a quiz, assessment, test, personality quiz, or scored questionnaire and needs a working preview link.
 ---
 
 # Create a RooQuiz Preview Assessment
@@ -61,7 +61,7 @@ If you set a `secret` in the JSON, append `?secret=<secret>` to that link. For a
 
 ```jsonc
 {
-  "scene": "quiz",                 // required; see "The four scenes". Sets allowed question types and scoring. Cannot change after creation.
+  "scene": "quiz",                 // required; see "The three scenes". Sets allowed question types and scoring. Cannot change after creation.
   "title": "My Quiz",              // required
   "description": "Optional intro",
   "language": "en_US",             // form language; default zh_CN. See "language values".
@@ -84,16 +84,15 @@ Key points:
 - Unknown top-level fields are silently ignored by the server (no error).
 - **`secret`**: omit it for a clean link that works with just the token (tokens are random 8-char and expire in ~1 hour — fine for previews). Set it to make the token unguessable, at the cost of requiring `?secret=` on the link. Default: omit.
 
-## The four scenes
+## The three scenes
 
 | scene | What it is | Allowed question types | Scoring / outcome |
 | --- | --- | --- | --- |
 | `quiz` | Right/wrong quiz (correct answers earn points) | choice & input types, **no** `Rate` | each question gets `correctAnswer` + `exactScoring`; total = sum of earned points |
 | `scorecard` | Scored questionnaire (each option adds points) | choice & input types, **no** `FillBlank`/`Ordering`; `Rate` allowed | choice questions use `partialScoring` to give each option a value; `report` uses a `formula` to total and `levels` to bucket |
 | `outcome` | Personality/type test (options vote for result types) | `SingleCheck` / `MultiCheck` / `DropDown` / `TrueFalse` + `Breaker` / `Statement` / `Swiper` | each question uses `outcomeScoring` (option → which result it votes for); most-voted wins; **no** `correctAnswer`/`exactScoring`/`partialScoring` allowed |
-| `random_quiz` | Quiz that draws random questions from a bank | `RandomQuestion` placeholders + `Breaker` / `Statement` / `Swiper` | advanced; see "random_quiz" at the end |
 
-The server validates against the scene's rules and returns HTTP 400 with a specific `path` + `message` on any mismatch. For common cases use `quiz`, `scorecard`, or `outcome`.
+The server validates against the scene's rules and returns HTTP 400 with a specific `path` + `message` on any mismatch. Pick the scene matching your assessment: `quiz`, `scorecard`, or `outcome`.
 
 ## Question types
 
@@ -287,4 +286,3 @@ Levels may carry a `cta` (results-page button): `{ enabled, type: "link", text, 
 - **Validation errors:** a 400 response includes `errors[].path` and `message` — fix the JSON and retry. Most common: a question type or scoring style that doesn't match the `scene`, non-contiguous `levels`, or an `outcomeScoring` referencing a result `code` that isn't defined.
 - **Results page looks empty?** This is a preview (no submission backend); results are computed in the browser from the returned questions + `report`. Make sure `report.overallAnalysis` exists and scored questions carry the right scoring fields.
 - **`language` values:** `en_US` `de_DE` `es` `pt_BR` `fr` `zh_CN` (default) `zh_TW` `ja_JP` `ko_KR`.
-- **random_quiz (advanced):** put only `RandomQuestion` placeholders in `fields`, e.g. `{ "type": "RandomQuestion", "code": "r1", "questionType": "SingleCheck", "count": 5, "scoring": { "score": 10 } }` (`questionType` ∈ SingleCheck/MultiCheck/TrueFalse/FillBlank/Ordering), plus a matching `randomConfig` (question-pool config). The structure is more involved — prefer the three scenes above for standard previews.
