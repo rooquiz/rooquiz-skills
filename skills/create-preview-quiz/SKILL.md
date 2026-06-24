@@ -84,6 +84,31 @@ Key points:
 - Unknown top-level fields are silently ignored by the server (no error).
 - **`secret`**: omit it for a clean link that works with just the token (tokens are random 8-char and expire in ~1 hour — fine for previews). Set it to make the token unguessable, at the cost of requiring `?secret=` on the link. Default: omit.
 
+## Themes
+
+`personalized.theme.name` sets the visual theme. Omit `theme` to default to `light`. Set it as `"personalized": { "key": "default", "theme": { "name": "synthwave" }, "layout": "card" }` (`layout` is still only `list` or `card`).
+
+Pick a theme that fits the quiz's topic/mood. **To use a random theme** — when the user asks for one, wants variety, or has no preference — just choose a random `name` from this list when building the JSON (there's no server-side "random" option). Recommended quiz palette:
+
+| name | vibe / good for |
+| --- | --- |
+| `light` | clean neutral bright; default, formal/general quizzes |
+| `corporate` | professional blue+gray; B2B, career, business |
+| `dark` | modern sleek dark; tech, night, cool personality quizzes |
+| `cupcake` | soft pink, cute, rounded; fun, food, kids, lighthearted |
+| `pastel` | gentle pastel artsy; lifestyle, aesthetics, soft mood |
+| `valentine` | pink romantic hearts; love, relationships, holidays |
+| `synthwave` | neon purple/pink retro; gaming, trends, bold personality |
+| `luxury` | dark + gold premium; finance, luxury, high-end |
+| `forest` | deep green nature; environment, health, outdoors |
+| `coffee` | warm brown cozy; food & drink, cafe, lifestyle |
+| `autumn` | warm orange/brown seasonal; autumn, cozy, harvest |
+| `halloween` | purple + orange spooky; Halloween, horror, festive |
+| `night` | deep calm blue; astronomy, mindfulness, calm tech |
+| `cyberpunk` | high-contrast neon yellow; tech, esports, gaming |
+
+The full daisyUI theme set also renders (e.g. `emerald`, `dracula`, `retro`, `nord`, `sunset`, `winter`, `lofi`, `garden`, `aqua`, `business`, `lemonade`, `dim`, `bumblebee`, `acid`, `fantasy`, `wireframe`, `black`, `cmyk`) — the table above is just the recommended quiz palette. The server doesn't validate the name, so a typo silently falls back to default styling rather than erroring.
+
 ## The three scenes
 
 | scene | What it is | Allowed question types | Scoring / outcome |
@@ -148,6 +173,8 @@ These wrong patterns get reached for out of habit; the server rejects them with 
 
 ## Complete examples
 
+Each example sets `personalized.theme.name` to a theme matched to its topic (see **Themes** above) — swap in any other name, or pick one at random.
+
 ### quiz (right/wrong)
 
 ```json
@@ -155,7 +182,7 @@ These wrong patterns get reached for out of habit; the server rejects them with 
   "scene": "quiz",
   "title": "World Capitals Quiz",
   "language": "en_US",
-  "personalized": { "key": "default", "theme": { "name": "light" }, "layout": "card" },
+  "personalized": { "key": "default", "theme": { "name": "corporate" }, "layout": "card" },
   "indexDisplayMode": "number",
   "fields": [
     {
@@ -200,7 +227,7 @@ These wrong patterns get reached for out of habit; the server rejects them with 
   "scene": "scorecard",
   "title": "Healthy Habits Score",
   "language": "en_US",
-  "personalized": { "key": "default", "theme": { "name": "light" }, "layout": "card" },
+  "personalized": { "key": "default", "theme": { "name": "forest" }, "layout": "card" },
   "fields": [
     {
       "type": "SingleCheck", "code": "q1", "name": "How often do you exercise?",
@@ -249,7 +276,7 @@ These wrong patterns get reached for out of habit; the server rejects them with 
   "scene": "outcome",
   "title": "What's Your Travel Style?",
   "language": "en_US",
-  "personalized": { "key": "default", "theme": { "name": "light" }, "layout": "card" },
+  "personalized": { "key": "default", "theme": { "name": "pastel" }, "layout": "card" },
   "fields": [
     {
       "type": "SingleCheck", "code": "q1", "name": "Ideal weekend?",
