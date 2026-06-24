@@ -2,7 +2,7 @@
 
 Build shareable [RooQuiz](https://rooquiz.com) assessments — a quiz, scorecard, personality test, or scored questionnaire — straight from your AI agent. Just ask in natural language and get back a live preview link you can open or share — **no account, login, or API key required**.
 
-The skill is a single self-contained [`SKILL.md`](plugins/rooquiz-tools/skills/create-preview-quiz/SKILL.md): plain instructions for one public, no-auth HTTP endpoint. That makes it usable by **any AI agent or assistant that can read a skill file and make an HTTP request** — not just Claude. This repo also packages it as a [Claude Code plugin](https://code.claude.com/docs/en/plugin-marketplaces.md) for one-command install.
+Each assessment type is its own self-contained `SKILL.md` — [`preview-quiz`](plugins/rooquiz-tools/skills/preview-quiz/SKILL.md), [`preview-scorecard`](plugins/rooquiz-tools/skills/preview-scorecard/SKILL.md), and [`preview-outcome`](plugins/rooquiz-tools/skills/preview-outcome/SKILL.md) — plain instructions for one public, no-auth HTTP endpoint. That makes them usable by **any AI agent or assistant that can read a skill file and make an HTTP request** — not just Claude. This repo also packages them as a [Claude Code plugin](https://code.claude.com/docs/en/plugin-marketplaces.md) for one-command install.
 
 ## Use with Claude Code
 
@@ -17,7 +17,7 @@ Then just ask in natural language:
 
 > “Make a 5-question personality quiz about coffee preferences and give me a link.”
 
-The agent builds the assessment and replies with a link like `https://quizster.app/b/7k3m9q2p`. You can also invoke the skill directly with `/rooquiz-tools:create-preview-quiz`.
+The agent builds the assessment and replies with a link like `https://quizster.app/b/7k3m9q2p`. You can also invoke a skill directly with `/rooquiz-tools:preview-quiz`, `/rooquiz-tools:preview-scorecard`, or `/rooquiz-tools:preview-outcome`.
 
 ## Use with any other agent
 
@@ -29,21 +29,25 @@ npx skills add rooquiz/rooquiz-skills
 
 > Replace `rooquiz` with your GitHub org/username if you forked this repo.
 
-Or skip the tooling entirely: the skill needs no special runtime. Point your agent at [`SKILL.md`](skills/create-preview-quiz/SKILL.md) — paste it into context, drop it into your agent's skills/instructions directory, or fetch it from this repo. It documents the full request format, scenes, scoring rules, and copy-paste examples. Anything that can issue an HTTP `POST` — a coding agent's fetch tool, a script, `curl`, Postman — can create a preview.
+Or skip the tooling entirely: the skills need no special runtime. Point your agent at the `SKILL.md` for the type you want — [`preview-quiz`](skills/preview-quiz/SKILL.md), [`preview-scorecard`](skills/preview-scorecard/SKILL.md), or [`preview-outcome`](skills/preview-outcome/SKILL.md) — by pasting it into context, dropping it into your agent's skills/instructions directory, or fetching it from this repo. Each documents the full request format, scoring rules, and copy-paste examples for its assessment type. Anything that can issue an HTTP `POST` — a coding agent's fetch tool, a script, `curl`, Postman — can create a preview.
 
 ## What's inside
 
 | Plugin | Skill | What it does |
 | --- | --- | --- |
-| `rooquiz-tools` | `create-preview-quiz` | Create a quiz / scorecard / personality (outcome) / random-quiz preview and get a shareable link |
+| `rooquiz-tools` | `preview-quiz` | Right/wrong quiz — correct answers earn points and the taker gets a graded score |
+| `rooquiz-tools` | `preview-scorecard` | Scored questionnaire — each option adds points toward a total that buckets into a level |
+| `rooquiz-tools` | `preview-outcome` | Personality / type test — options vote for result types and the most-voted type wins |
 
 ## How it works
 
-The skill `POST`s your assessment JSON to RooQuiz's open preview endpoint (`https://preview.rooquiz.com/api/preview-forms`) and builds a link to open it on `quizster.app`. It's a thin, transparent client — no credentials, just an HTTP request. Previews are temporary (~1 hour); recreate the assessment in RooQuiz to keep it permanently. The full field schema, scenes, scoring rules, and examples live in the skill itself:
+Each skill `POST`s your assessment JSON to RooQuiz's open preview endpoint (`https://preview.rooquiz.com/api/preview-forms`) and builds a link to open it on `quizster.app`. They're thin, transparent clients — no credentials, just an HTTP request. Previews are temporary (~1 hour); recreate the assessment in RooQuiz to keep it permanently. The full field schema, scoring rules, and examples live in each skill:
 
-- [`create-preview-quiz` skill](skills/create-preview-quiz/SKILL.md)
+- [`preview-quiz` skill](skills/preview-quiz/SKILL.md) — right/wrong graded quiz
+- [`preview-scorecard` skill](skills/preview-scorecard/SKILL.md) — scored questionnaire totaled into a level
+- [`preview-outcome` skill](skills/preview-outcome/SKILL.md) — personality / type test
 
-The same skill is published in two layouts that must stay in sync: [`skills/create-preview-quiz/SKILL.md`](skills/create-preview-quiz/SKILL.md) (for the `skills` CLI and generic agents) and [`plugins/rooquiz-tools/skills/create-preview-quiz/SKILL.md`](plugins/rooquiz-tools/skills/create-preview-quiz/SKILL.md) (for the Claude Code plugin).
+Every skill is published in two layouts that must stay in sync: `skills/<name>/SKILL.md` (for the `skills` CLI and generic agents) and `plugins/rooquiz-tools/skills/<name>/SKILL.md` (for the Claude Code plugin).
 
 ## Links
 
