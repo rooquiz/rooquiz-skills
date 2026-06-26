@@ -82,7 +82,7 @@ If you set a `secret` in the JSON, append `?secret=<secret>` to that link. For a
 ```
 
 Key points:
-- Every question needs a **unique `code`** (string); option `code`s must be unique within their question.
+- Every question needs a **unique `code`** (string); option `code`s must be unique within their question. A `code` must be a valid identifier — start with a letter or `_`, then only letters/digits/`_` (no `-`, spaces, or leading digit), max 64 chars, and not a reserved math word (`e`, `E`, `pi`, `PI`, `tau`, `phi`, `i`, `Infinity`, `NaN`, `true`, `false`, `null`, `undefined`). The server rejects violations with HTTP 400.
 - `name` is the question text; `description` is optional helper text.
 - Unknown top-level fields are silently ignored by the server (no error).
 - **`secret`**: omit it for a clean link that works with just the token (tokens are random 8-char and expire in ~1 hour — fine for previews). Set it to make the token unguessable, at the cost of requiring `?secret=` on the link. Default: omit.
@@ -163,6 +163,7 @@ Levels may carry a `cta` (results-page button): `{ enabled, type: "link", text, 
 These wrong patterns get reached for out of habit; the server rejects them with HTTP 400. The formats above are correct — match them exactly.
 
 - **Option lists are `choices`, never `options`.** Every choice question uses `"choices": [{ "code": "a", "value": "Label" }]`. There is no `options` key.
+- **Codes must be valid identifiers, not arbitrary text** — no hyphens (`type-a`), spaces, or leading digits (`1q`), and not reserved math words. Watch out for **5+ options coded `a,b,c,d,e`**: `e` (Euler's number) is reserved and rejected — use `o1, o2, …` or another non-reserved identifier.
 - **Scoring is field-level, not nested inside each choice.** `correctAnswer` and `exactScoring` sit next to `choices` on the field, not on an individual option.
 - **Don't set a `formula` for a quiz** — quizzes auto-sum earned points. `formula` is a scorecard thing; including it here is unnecessary (use the preview-scorecard skill if you actually want a custom total).
 - **`report.overallAnalysis` is required** — give it at least a `title` and a valid `levels` array.

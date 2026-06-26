@@ -82,7 +82,7 @@ If you set a `secret` in the JSON, append `?secret=<secret>` to that link. For a
 ```
 
 Key points:
-- Every question needs a **unique `code`** (string); option `code`s must be unique within their question.
+- Every question needs a **unique `code`** (string); option `code`s must be unique within their question. A question/option `code` must be a valid identifier — start with a letter or `_`, then only letters/digits/`_` (no `-`, spaces, or leading digit), max 64 chars, and not a reserved math word (`e`, `E`, `pi`, `PI`, `tau`, `phi`, `i`, `Infinity`, `NaN`, `true`, `false`, `null`, `undefined`). The server rejects violations with HTTP 400.
 - `name` is the question text; `description` is optional helper text.
 - Unknown top-level fields are silently ignored by the server (no error).
 - **`secret`**: omit it for a clean link that works with just the token (tokens are random 8-char and expire in ~1 hour — fine for previews). Set it to make the token unguessable, at the cost of requiring `?secret=` on the link. Default: omit.
@@ -166,6 +166,7 @@ Each outcome carries a `code` (referenced by `outcomeScoring`), a display `name`
 These wrong patterns get reached for out of habit; the server rejects them with HTTP 400. The formats above are correct — match them exactly.
 
 - **Option lists are `choices`, never `options`.** Every choice question uses `"choices": [{ "code": "a", "value": "Label" }]`. There is no `options` key.
+- **Question/option codes must be valid identifiers, not arbitrary text** — no hyphens (`type-a`), spaces, or leading digits (`1q`), and not reserved math words. Watch out for **5+ options coded `a,b,c,d,e`**: `e` (Euler's number) is reserved and rejected — use `o1, o2, …` or another non-reserved identifier. (This constraint is on question/option codes; result-type codes in `outcomeAnalysis.outcomes` are free-form.)
 - **Scoring is a field-level `outcomeScoring` array, not a value nested inside each choice.** Correct: `"outcomeScoring": [{ "value": "a", "outcomes": [{ "code": "type1" }] }]` next to `choices`. Wrong: `{ "code": "a", "value": "…", "outcomeScoring": { "type1": 1 } }` on the option.
 - **`report.overallAnalysis` is still required** (give it a `title`) — the result *types* go in the separate `report.outcomeAnalysis.outcomes`.
 - **Every `outcomes[].code` used in scoring must be defined in `outcomeAnalysis.outcomes`**, or you'll get a 400 for an undefined result code.
