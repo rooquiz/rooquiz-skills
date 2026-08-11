@@ -7,7 +7,7 @@ description: Create a shareable RooQuiz preview quiz — a right/wrong assessmen
 
 POST a quiz as JSON to RooQuiz's open preview endpoint and instantly get a **short-lived (~1 hour)**, **browser-openable** preview link. The creation endpoint is public (`access.create => true`), so this needs **no account, login, API key, or credentials** — anything that can make an HTTP request can use it.
 
-A **quiz** (`scene: "quiz"`) is a right/wrong assessment: each scored question carries a correct answer and earns points; the total is the sum of earned points, then bucketed into levels on the results page. It produces a **temporary preview**, not a permanently published form — the link expires automatically (recreate the quiz in RooQuiz if you need to keep it).
+A **quiz** (`scene: "knowledge_quiz"`) is a right/wrong assessment: each scored question carries a correct answer and earns points; the total is the sum of earned points, then bucketed into levels on the results page. It produces a **temporary preview**, not a permanently published form — the link expires automatically (recreate the quiz in RooQuiz if you need to keep it).
 
 Two sibling skills cover the other assessment types — pick the one that matches:
 - **preview-scorecard** — a scored questionnaire where each option adds points toward a total + level (no "correct" answer).
@@ -65,7 +65,7 @@ If you set a `secret` in the JSON, append `?secret=<secret>` to that link. For a
 
 ```jsonc
 {
-  "scene": "quiz",                 // required & fixed for this skill. Sets allowed question types and scoring. Cannot change after creation.
+  "scene": "knowledge_quiz",                 // required & fixed for this skill. Sets allowed question types and scoring. Cannot change after creation.
   "title": "My Quiz",              // required
   "description": "Optional intro",
   "language": "en_US",             // form language; default zh_CN. See "language values" in Notes.
@@ -173,7 +173,7 @@ The `personalized.theme.name` is matched to the topic (see **Themes** above) —
 
 ```json
 {
-  "scene": "quiz",
+  "scene": "knowledge_quiz",
   "title": "World Capitals Quiz",
   "language": "en_US",
   "personalized": { "key": "default", "theme": { "name": "corporate" } },
@@ -218,6 +218,6 @@ The `personalized.theme.name` is matched to the topic (see **Themes** above) —
 
 - **Expiry:** previews self-destruct after about **1 hour** (`expiresAt`); the link 404s afterward. Recreate the quiz in RooQuiz to keep it permanently.
 - **Rate limit:** anonymous creation is capped at about **10 previews per hour** per IP.
-- **Validation errors:** a 400 response includes `errors[].path` and `message` — fix the JSON and retry. Most common: a question type or scoring style that doesn't match `scene: "quiz"`, or non-contiguous `levels`.
+- **Validation errors:** a 400 response includes `errors[].path` and `message` — fix the JSON and retry. Most common: a question type or scoring style that doesn't match `scene: "knowledge_quiz"`, or non-contiguous `levels`.
 - **Results page looks empty?** This is a preview (no submission backend); results are computed in the browser from the returned questions + `report`. Make sure `report.overallAnalysis` exists and scored questions carry `correctAnswer` + `exactScoring`.
 - **`language` values:** `en_US` `de_DE` `es` `pt_BR` `fr` `zh_CN` (default) `zh_TW` `ja_JP` `ko_KR`.
