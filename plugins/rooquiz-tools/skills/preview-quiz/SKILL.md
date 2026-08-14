@@ -17,7 +17,7 @@ Two sibling skills cover the other assessment types — pick the one that matche
 
 1. **Build the quiz JSON** (structure below).
 2. **Create it:** `POST {PREVIEW_BASE}/api/preview-forms` with the JSON as the body and header `Content-Type: application/json`. Returns `{ doc: { publicToken, expiresAt }, message }`.
-3. **Hand back the link:** `{QUIZ_BASE}/b/{publicToken}` (append `?secret={secret}` only if you set a `secret` when creating).
+3. **Hand back the link:** `{QUIZ_BASE}/b/{publicToken}` — that is the whole link, nothing to append.
 
 ### Endpoints
 
@@ -59,7 +59,7 @@ Read `doc.publicToken` and build the preview link to hand the user:
 https://quizster.app/b/<publicToken>
 ```
 
-If you set a `secret` in the JSON, append `?secret=<secret>` to that link. For a self-hosted RooQuiz, swap the two hosts for your deployment's preview-API and quiz hosts (see the endpoints table above).
+That is the complete link — nothing to append. For a self-hosted RooQuiz, swap the two hosts for your deployment's preview-API and quiz hosts (see the endpoints table above).
 
 ## Quiz JSON — top level
 
@@ -75,8 +75,7 @@ If you set a `secret` in the JSON, append `?secret=<secret>` to that link. For a
   },
   "indexDisplayMode": "number",    // question numbering: none (default) | number | uppercase | roman
   "fields": [ /* questions — see "Question types" and "Scoring" */ ],
-  "report": { /* results page — see "Report configuration" */ },
-  "secret": "optional; if set, the preview link must include ?secret="
+  "report": { /* results page — see "Report configuration" */ }
 }
 ```
 
@@ -84,7 +83,6 @@ Key points:
 - Every question needs a **unique `code`** (string); option `code`s must be unique within their question. A `code` must be a valid identifier — start with a letter or `_`, then only letters/digits/`_` (no `-`, spaces, or leading digit), max 64 chars, and not a reserved math word (`e`, `E`, `pi`, `PI`, `tau`, `phi`, `i`, `Infinity`, `NaN`, `true`, `false`, `null`, `undefined`). The server rejects violations with HTTP 400.
 - `name` is the question text; `description` is optional helper text.
 - Unknown top-level fields are silently ignored by the server (no error).
-- **`secret`**: omit it for a clean link that works with just the token (tokens are random 8-char and expire in ~1 hour — fine for previews). Set it to make the token unguessable, at the cost of requiring `?secret=` on the link. Default: omit.
 
 ## Themes
 
