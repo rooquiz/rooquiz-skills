@@ -41,7 +41,7 @@ Or skip the tooling entirely: the skills need no special runtime. Point your age
 
 ## How it works
 
-Each skill `POST`s your assessment JSON to RooQuiz's open preview endpoint (`https://preview.rooquiz.com/api/preview-forms`) and builds a link to open it on `quizster.app`. They're thin, transparent clients — no credentials, just an HTTP request. Previews are temporary (~1 hour); recreate the assessment in RooQuiz to keep it permanently. The full field schema, scoring rules, and examples live in each skill:
+Each skill `POST`s your assessment JSON to RooQuiz's open preview endpoint (`https://preview.rooquiz.com/api/preview-forms`) and builds a link to open it on `quizster.app`. They're thin, transparent clients — no credentials, just an HTTP request. Previews are temporary (~1 hour); the preview page's **Publish** button carries the assessment into the RooQuiz editor, prefilled, when you want to keep it. The full field schema, scoring rules, and examples live in each skill:
 
 - [`preview-quiz` skill](skills/preview-quiz/SKILL.md) — right/wrong graded quiz
 - [`preview-scorecard` skill](skills/preview-scorecard/SKILL.md) — scored questionnaire totaled into a level

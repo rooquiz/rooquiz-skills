@@ -7,7 +7,7 @@ description: Create a shareable RooQuiz preview personality / outcome test — o
 
 POST an outcome test as JSON to RooQuiz's open preview endpoint and instantly get a **short-lived (~1 hour)**, **browser-openable** preview link. The creation endpoint is public (`access.create => true`), so this needs **no account, login, API key, or credentials** — anything that can make an HTTP request can use it.
 
-An **outcome test** (`scene: "outcome_quiz"`) is a personality / type test: there are no right answers and no numeric score. Each option *votes* for one or more result types, and the most-voted type is shown as the result (e.g. "The Explorer" vs "The Homebody"). It produces a **temporary preview**, not a permanently published form — the link expires automatically (recreate it in RooQuiz if you need to keep it).
+An **outcome test** (`scene: "outcome_quiz"`) is a personality / type test: there are no right answers and no numeric score. Each option *votes* for one or more result types, and the most-voted type is shown as the result (e.g. "The Explorer" vs "The Homebody"). It produces a **temporary preview**, not a permanently published form — the link expires automatically (hit **Publish** on the preview page to carry it into RooQuiz and keep it).
 
 Two sibling skills cover the other assessment types — pick the one that matches:
 - **preview-quiz** — a right/wrong assessment where correct answers earn points and the taker gets a graded score.
@@ -114,10 +114,10 @@ The full daisyUI theme set also renders (e.g. `emerald`, `dracula`, `retro`, `no
 Each field is `{ type, code, name, ... }`. An outcome test allows **only** these types:
 
 - **Choice** (carry `choices: [{ code, value }]`, where `value` is the option label):
-  `SingleCheck` (single), `MultiCheck` (multiple), `DropDown`, `TrueFalse` (no choices)
+  `SingleCheck` (single), `MultiCheck` (multiple), `DropDown`, `TrueFalse` (no `choices`; optional `trueLabel`/`falseLabel` relabel the two buttons, ≤100 chars each)
 - **Display only** (never scored): `Statement` (`content`), `Breaker` (page break / divider), `Swiper` (image carousel, `items`)
 
-Input/number/date/time/`Rate`/`FillBlank`/`Ordering`/`Cascade` are **not** allowed here — an outcome test only votes via the choice types above. Optional shared props on any field: `required`, `description`, `explain`, `hidden`, `activeColor` (`primary`/`secondary`/`accent`/`neutral`), `layout` (`list`/`grid`).
+Input/number/date/time/`Rate`/`FillBlank`/`Ordering`/`Cascade`/`Attachment` are **not** allowed here — an outcome test only votes via the choice types above, and free text, a number or an uploaded file can't vote. Optional shared props on any field: `required`, `description`, `explain`, `hidden`, `activeColor` (`primary`/`secondary`/`accent`/`neutral`), `layout` (`list`/`grid`).
 
 ## Scoring
 
@@ -130,11 +130,12 @@ Map each option to the result type(s) it votes for with **`outcomeScoring`** (a 
 ]
 ```
 
-- Each `value` must be one of that question's `choices[].code`s.
+- Each `value` must be one of that question's `choices[].code`s. A `TrueFalse` question has no `choices`, so its two values are the strings `"true"` and `"false"`.
 - Each `outcomes[].code` must exist in `report.outcomeAnalysis.outcomes` (defined below).
 - An option may vote for more than one type — list multiple entries in its `outcomes` array.
+- A vote counts 1 by default; add `weight` to make it count more (`{ "code": "explorer", "weight": 2 }`).
 
-At the end, the type with the most votes is shown as the result.
+At the end, the type with the most votes is shown as the result. A tie is broken by the order of `outcomeAnalysis.outcomes` — the one listed earliest wins.
 
 ## Report configuration
 
@@ -156,7 +157,14 @@ Two parts are needed:
 }
 ```
 
-Each outcome carries a `code` (referenced by `outcomeScoring`), a display `name`, and optional `color` (hex) and `description`. Define at least two so the vote has something to choose between.
+Each outcome carries a `code` (referenced by `outcomeScoring`; unique and non-empty) and a display `name`, plus optionally:
+
+- `color` — hex accent for the type;
+- `description` — the result write-up shown to the taker;
+- `image` — an `https` URL used as the result page's hero and as the share image;
+- `cta` — a results-page button, `{ enabled, type: "link", label, text, url }`: `label` is the line above the button (≤100 chars), `text` the button itself (≤30), `url` (≤2048) must be `http`/`https`, and enabling it makes `text` and `url` required. It always opens in a new tab.
+
+The server requires at least one outcome; define at least two so the vote has something to choose between, and order them deliberately — the first one wins a tie.
 
 ## Common mistakes
 
@@ -218,8 +226,8 @@ The `personalized.theme.name` is matched to the topic (see **Themes** above) —
 
 ## Notes & limits
 
-- **Expiry:** previews self-destruct after about **1 hour** (`expiresAt`); the link 404s afterward. Recreate it in RooQuiz to keep it permanently.
-- **Rate limit:** anonymous creation is capped at about **10 previews per hour** per IP.
-- **Validation errors:** a 400 response includes `errors[].path` and `message` — fix the JSON and retry. Most common: a question type that doesn't match `scene: "outcome_quiz"`, or an `outcomeScoring` referencing a result `code` that isn't defined in `outcomeAnalysis.outcomes`.
-- **Results page looks empty?** This is a preview (no submission backend); results are computed in the browser from the returned questions + `report`. Make sure `report.overallAnalysis` exists and every voted question carries `outcomeScoring` pointing at defined outcomes.
+- **Expiry:** previews self-destruct after about **1 hour** (`expiresAt`); the link 404s afterward. To keep one, open it and hit **Publish** in the preview's top bar — that carries this exact test (questions, vote mapping, result types, theme) into the RooQuiz editor, prefilled from the preview token.
+- **Rate limit:** anonymous creation is capped at **5 previews per minute** per IP; past that the endpoint answers **429** — wait a minute and retry.
+- **Validation errors:** a 400 nests the details — `errors[0].data.errors[]`, each entry with a `path` and a `message` (e.g. `fields.1.outcomeScoring`). Read those, fix the JSON, retry. Most common: a question type that doesn't match `scene: "outcome_quiz"`, a voting question with no `outcomeScoring`, or an `outcomeScoring` referencing a result `code` (or a choice `code`) that isn't defined.
+- **What the preview page shows:** a top bar with **Quiz** / **Report** tabs and a **Publish** button. The test is fully answerable, but **answers are never saved and no type is picked** — submitting just explains preview mode. The **Report** tab renders a *sample* report with placeholder content to show the layout; it does not tally your votes or display one of your outcomes. Real typing starts once the test is published, so `report` is still validated on create and travels with the form — just don't expect the preview to run the vote.
 - **`language` values:** `en_US` `de_DE` `es` `pt_BR` `fr` `zh_CN` (default) `zh_TW` `ja_JP` `ko_KR`.

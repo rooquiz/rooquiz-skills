@@ -7,7 +7,7 @@ description: Create a shareable RooQuiz preview quiz — a right/wrong assessmen
 
 POST a quiz as JSON to RooQuiz's open preview endpoint and instantly get a **short-lived (~1 hour)**, **browser-openable** preview link. The creation endpoint is public (`access.create => true`), so this needs **no account, login, API key, or credentials** — anything that can make an HTTP request can use it.
 
-A **quiz** (`scene: "knowledge_quiz"`) is a right/wrong assessment: each scored question carries a correct answer and earns points; the total is the sum of earned points, then bucketed into levels on the results page. It produces a **temporary preview**, not a permanently published form — the link expires automatically (recreate the quiz in RooQuiz if you need to keep it).
+A **quiz** (`scene: "knowledge_quiz"`) is a right/wrong assessment: each scored question carries a correct answer and earns points; the total is the sum of earned points, then bucketed into levels on the results page. It produces a **temporary preview**, not a permanently published form — the link expires automatically (hit **Publish** on the preview page to carry it into RooQuiz and keep it).
 
 Two sibling skills cover the other assessment types — pick the one that matches:
 - **preview-scorecard** — a scored questionnaire where each option adds points toward a total + level (no "correct" answer).
@@ -114,11 +114,11 @@ The full daisyUI theme set also renders (e.g. `emerald`, `dracula`, `retro`, `no
 Each field is `{ type, code, name, ... }`. In a quiz you can use:
 
 - **Choice** (carry `choices: [{ code, value }]`, where `value` is the option label):
-  `SingleCheck` (single), `MultiCheck` (multiple; optional `min`/`max`), `DropDown`, `Cascade`, `Ordering`, `TrueFalse` (no choices)
-- **Input**: `FillBlank` (optional `multiline`), `NumberField`, `DateField` (needs `precision`), `TimeField`
+  `SingleCheck` (single), `MultiCheck` (multiple; optional `min`/`max`), `DropDown`, `Ordering`, `TrueFalse` (no `choices`; optional `trueLabel`/`falseLabel` relabel the two buttons, ≤100 chars each)
+- **Input**: `FillBlank` (optional `multiline`), `NumberField`
 - **Display only** (never scored): `Statement` (`content`), `Breaker` (page break / divider), `Swiper` (image carousel, `items`)
 
-`Rate` is **not** allowed in a quiz (it's a scorecard type). Optional shared props on any field: `required`, `description`, `explain`, `hidden`, `activeColor` (`primary`/`secondary`/`accent`/`neutral`), `layout` (`list`/`grid`).
+`Cascade`, `DateField`, `TimeField`, `Rate` and `Attachment` are **not** allowed in a quiz — a region picker, a birthday, a rating or an uploaded file has no "correct answer". They belong to the scorecard scene (`preview-scorecard`), and the 400 names the alternative to use. Optional shared props on any field: `required`, `description`, `explain`, `hidden`, `activeColor` (`primary`/`secondary`/`accent`/`neutral`), `layout` (`list`/`grid`).
 
 ## Scoring
 
@@ -129,7 +129,9 @@ Add **`correctAnswer`** + **`exactScoring`** to each scored question:
 "exactScoring": { "mode": "exactMatch", "score": 10 }
 ```
 
-**`correctAnswer` value depends on the question type:** single choice = the correct option's `code` (string); multiple/ordering = array of `code`s; fill-in = string; true/false = boolean.
+**`correctAnswer` value depends on the question type:** single choice = the correct option's `code` (string); multiple/ordering = array of `code`s; fill-in = string; true/false = `"true"` / `"false"` (a real boolean works too).
+
+`SingleCheck`, `MultiCheck`, `DropDown`, `TrueFalse` and `Ordering` are the graded types — give each one `correctAnswer` + `exactScoring`. `FillBlank` and `NumberField` are graded only when they carry `exactScoring`, so an unscored `FillBlank` doubles as a lead-capture field (name, email) inside the quiz.
 
 Optional partial credit: `exactScoring.accuracy` + `extraLevels`, or `partialScoring` on choice questions (using `partialScoring` requires `exactScoring` too). Display-only fields (`Statement`/`Breaker`/`Swiper`) are never scored — leave scoring off them.
 
@@ -153,7 +155,9 @@ Optional partial credit: `exactScoring.accuracy` + `extraLevels`, or `partialSco
 
 **Strict `levels` rules** (violations return HTTP 400): the first level's `minScore` must be `null` (−∞); the last level's `maxScore` must be `null` (+∞); middle levels have finite numbers on both ends; for adjacent levels `current.minScore === previous.maxScore`; `maxScore` strictly increases down the array. A single level has `null` on both ends.
 
-Levels may carry a `cta` (results-page button): `{ enabled, type: "link", text, url, newWindow }`. When enabled, `text` and `url` are required, and `url` must be an `http`/`https` link. `summaryTemplate` defaults to a built-in template if omitted.
+Levels may carry a `color` (hex) and a `cta` (results-page button): `{ enabled, type: "link", label, text, url }` — `label` is the line above the button (≤100 chars), `text` the button itself (≤30), `url` (≤2048) an `http`/`https` link. When the cta is enabled, `text` and `url` are required. CTAs always open in a new tab; there is no `newWindow` key any more (send it and it is ignored).
+
+`summaryTemplate` defaults to a built-in template if omitted. Set `"hideOverallScore": true` on `overallAnalysis` to drop the numeric score / score ring from the results page and show only the level and its write-up.
 
 ## Common mistakes
 
@@ -214,8 +218,8 @@ The `personalized.theme.name` is matched to the topic (see **Themes** above) —
 
 ## Notes & limits
 
-- **Expiry:** previews self-destruct after about **1 hour** (`expiresAt`); the link 404s afterward. Recreate the quiz in RooQuiz to keep it permanently.
-- **Rate limit:** anonymous creation is capped at about **10 previews per hour** per IP.
-- **Validation errors:** a 400 response includes `errors[].path` and `message` — fix the JSON and retry. Most common: a question type or scoring style that doesn't match `scene: "knowledge_quiz"`, or non-contiguous `levels`.
-- **Results page looks empty?** This is a preview (no submission backend); results are computed in the browser from the returned questions + `report`. Make sure `report.overallAnalysis` exists and scored questions carry `correctAnswer` + `exactScoring`.
+- **Expiry:** previews self-destruct after about **1 hour** (`expiresAt`); the link 404s afterward. To keep one, open it and hit **Publish** in the preview's top bar — that carries this exact quiz (questions, scoring, report, theme) into the RooQuiz editor, prefilled from the preview token.
+- **Rate limit:** anonymous creation is capped at **5 previews per minute** per IP; past that the endpoint answers **429** — wait a minute and retry.
+- **Validation errors:** a 400 nests the details — `errors[0].data.errors[]`, each entry with a `path` and a `message` (e.g. `fields.1.type`). Read those, fix the JSON, retry. Most common: a question type or scoring style that doesn't match `scene: "knowledge_quiz"`, or non-contiguous `levels`.
+- **What the preview page shows:** a top bar with **Quiz** / **Report** tabs and a **Publish** button. The quiz is fully answerable, but **answers are never saved and nothing is graded** — submitting just explains preview mode. The **Report** tab renders a *sample* report with placeholder numbers to show the layout; it does not run your `levels` against the answers. Real grading starts once the quiz is published, so `report` is still validated on create and travels with the form — just don't expect the preview to score it.
 - **`language` values:** `en_US` `de_DE` `es` `pt_BR` `fr` `zh_CN` (default) `zh_TW` `ja_JP` `ko_KR`.
