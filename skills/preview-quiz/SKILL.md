@@ -157,7 +157,7 @@ Optional partial credit: `exactScoring.accuracy` + `extraLevels`, or `partialSco
 
 Levels may carry a `color` (hex) and a `cta` (results-page button): `{ enabled, type: "link", label, text, url }` — `label` is the line above the button (≤100 chars), `text` the button itself (≤30), `url` (≤2048) an `http`/`https` link. When the cta is enabled, `text` and `url` are required. CTAs always open in a new tab; there is no `newWindow` key any more (send it and it is ignored).
 
-`summaryTemplate` defaults to a built-in template if omitted. Set `"hideOverallScore": true` on `overallAnalysis` to drop the numeric score / score ring from the results page and show only the level and its write-up.
+`summaryTemplate` defaults to a built-in template if omitted. To hide every score the taker sees — the numeric score / score ring and percentile, the points badge on each question — set the top-level `"hideScores": { "enabled": true }`; levels and their write-ups still show. (It used to be `overallAnalysis.hideOverallScore`; that key is gone and is now silently ignored.)
 
 ## Common mistakes
 

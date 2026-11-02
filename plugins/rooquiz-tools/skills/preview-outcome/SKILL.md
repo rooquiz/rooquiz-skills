@@ -75,7 +75,8 @@ That is the complete link — nothing to append. For a self-hosted RooQuiz, swap
   },
   "indexDisplayMode": "number",    // question numbering: none (default) | number | uppercase | roman
   "fields": [ /* questions — see "Question types" and "Scoring" */ ],
-  "report": { /* results page — see "Report configuration" */ }
+  "report": { /* results page — see "Report configuration" */ },
+  "rules": []                      // conditional-display rules (outcome and scorecard scenes only); usually []
 }
 ```
 
@@ -135,7 +136,7 @@ Map each option to the result type(s) it votes for with **`outcomeScoring`** (a 
 - An option may vote for more than one type — list multiple entries in its `outcomes` array.
 - A vote counts 1 by default; add `weight` to make it count more (`{ "code": "explorer", "weight": 2 }`).
 
-At the end, the type with the most votes is shown as the result. A tie is broken by the order of `outcomeAnalysis.outcomes` — the one listed earliest wins.
+At the end, the type with the most votes is shown as the result. A tie is broken by the order of `outcomeAnalysis.outcomes` — the one listed earliest wins. Once the form has any `rules`, a question they hide casts no vote, and the winner is picked by vote share instead — (votes + 0.5) / (votes reachable in the questions the taker actually saw + 1) — so a type that only a short branch can reach is not outvoted by a longer one; ties fall back to raw votes, then list order.
 
 ## Report configuration
 

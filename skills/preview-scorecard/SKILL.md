@@ -76,7 +76,7 @@ That is the complete link — nothing to append. For a self-hosted RooQuiz, swap
   "indexDisplayMode": "number",    // question numbering: none (default) | number | uppercase | roman
   "fields": [ /* questions — see "Question types" and "Scoring" */ ],
   "report": { /* results page — see "Report configuration" */ },
-  "rules": []                      // conditional-display rules (scorecard-only feature); usually []
+  "rules": []                      // conditional-display rules (scorecard and outcome scenes only); usually []
 }
 ```
 
@@ -161,7 +161,7 @@ Only these types produce a score the `formula` can reference: `SingleCheck`, `Mu
 
 Levels may carry a `color` (hex) and a `cta` (results-page button): `{ enabled, type: "link", label, text, url }` — `label` is the line above the button (≤100 chars), `text` the button itself (≤30), `url` (≤2048) an `http`/`https` link. When the cta is enabled, `text` and `url` are required. CTAs always open in a new tab; there is no `newWindow` key any more (send it and it is ignored).
 
-`summaryTemplate` defaults to a built-in template if omitted. Set `"hideOverallScore": true` on `overallAnalysis` to drop the numeric score / score ring from the results page and keep only the level and its write-up — useful when the raw total is arbitrary and the band is the message.
+`summaryTemplate` defaults to a built-in template if omitted. To hide every score the taker sees — the numeric score / score ring and percentile, every dimension score, the points badge on each question — set the top-level `"hideScores": { "enabled": true }`; levels and their write-ups still show. (It used to be `overallAnalysis.hideOverallScore`; that key is gone and is now silently ignored.) Useful when the raw total is arbitrary and the band is the message.
 
 The `formula` is more than `+ - * / ( )`: `abs` `ceil` `floor` `round` `min` `max` `sum` `mean` `pow`, the comparison operators and a `cond ? a : b` ternary all evaluate, so `round((q1 + q2) / 2)` or `min(q1, 5) + q2` are fine.
 
