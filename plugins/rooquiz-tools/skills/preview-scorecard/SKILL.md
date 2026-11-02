@@ -1,6 +1,6 @@
 ---
 name: preview-scorecard
-description: Create a shareable RooQuiz preview scorecard — a scored questionnaire where each option adds points toward a total that buckets into levels — and get a link to open in the browser. No account, login, or API key required. Use this when someone wants to build, try out, or share a self-assessment, health/habit score, readiness or maturity check, satisfaction survey, or any rated questionnaire that turns answers into a total score and a level (no "correct" answer). For a right/wrong graded quiz, use the preview-quiz skill; for a personality/type test with no scores, use the preview-outcome skill.
+description: Create a shareable RooQuiz preview scorecard — a scored questionnaire where each option adds points toward a total that buckets into levels — and get a link to open in the browser. No account, login, or API key required. Use this when someone wants to build, try out, or share a self-assessment, health/habit score, readiness or maturity check, satisfaction survey, or any rated questionnaire that turns answers into a total score and a level (no "correct" answer). For a right/wrong graded quiz, use the preview-quiz skill; for a personality/type test with no scores, use the preview-outcome skill. For a questionnaire whose result is a personalized AI-written report rather than a score or a type, use the preview-ai-quiz skill.
 ---
 
 # Create a RooQuiz Preview Scorecard
@@ -9,9 +9,10 @@ POST a scorecard as JSON to RooQuiz's open preview endpoint and instantly get a 
 
 A **scorecard** (`scene: "scored_quiz"`) is a scored questionnaire: there's no "correct" answer — instead each option carries a point value, the `report.formula` totals them, and `report.levels` buckets the total into a result band (e.g. "Needs Work" → "Healthy"). It produces a **temporary preview**, not a permanently published form — the link expires automatically (hit **Publish** on the preview page to carry it into RooQuiz and keep it).
 
-Two sibling skills cover the other assessment types — pick the one that matches:
+Three sibling skills cover the other assessment types — pick the one that matches:
 - **preview-quiz** — a right/wrong assessment where correct answers earn points and the taker gets a graded score.
 - **preview-outcome** — a personality / type test where options vote for result types and the most-voted type wins (no scores).
+- **preview-ai-quiz** — an unscored questionnaire (uploads allowed) where an AI writes each taker a personalized report.
 
 ## Three steps
 

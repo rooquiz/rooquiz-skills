@@ -1,6 +1,6 @@
 ---
 name: preview-quiz
-description: Create a shareable RooQuiz preview quiz — a right/wrong assessment where correct answers earn points and the taker gets a score — and get a link to open in the browser. No account, login, or API key required. Use this when someone wants to build, try out, or share a graded quiz, test, trivia, or exam with correct answers and a final score. For a scored questionnaire where every option adds points, use the preview-scorecard skill; for a personality/type test with no right answers, use the preview-outcome skill.
+description: Create a shareable RooQuiz preview quiz — a right/wrong assessment where correct answers earn points and the taker gets a score — and get a link to open in the browser. No account, login, or API key required. Use this when someone wants to build, try out, or share a graded quiz, test, trivia, or exam with correct answers and a final score. For a scored questionnaire where every option adds points, use the preview-scorecard skill; for a personality/type test with no right answers, use the preview-outcome skill. For a questionnaire whose result is a personalized AI-written report rather than a score or a type, use the preview-ai-quiz skill.
 ---
 
 # Create a RooQuiz Preview Quiz
@@ -9,9 +9,10 @@ POST a quiz as JSON to RooQuiz's open preview endpoint and instantly get a **sho
 
 A **quiz** (`scene: "knowledge_quiz"`) is a right/wrong assessment: each scored question carries a correct answer and earns points; the total is the sum of earned points, then bucketed into levels on the results page. It produces a **temporary preview**, not a permanently published form — the link expires automatically (hit **Publish** on the preview page to carry it into RooQuiz and keep it).
 
-Two sibling skills cover the other assessment types — pick the one that matches:
+Three sibling skills cover the other assessment types — pick the one that matches:
 - **preview-scorecard** — a scored questionnaire where each option adds points toward a total + level (no "correct" answer).
 - **preview-outcome** — a personality / type test where options vote for result types and the most-voted type wins (no right answers).
+- **preview-ai-quiz** — an unscored questionnaire (uploads allowed) where an AI writes each taker a personalized report.
 
 ## Three steps
 
