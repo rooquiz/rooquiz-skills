@@ -168,6 +168,26 @@ Each outcome carries a `code` (referenced by `outcomeScoring`; unique and non-em
 
 The server requires at least one outcome; define at least two so the vote has something to choose between, and order them deliberately — the first one wins a tie.
 
+## Conditional rules (optional)
+
+`rules` shows or hides later questions based on earlier answers. That is how a product or course finder works: ask the goal first, then ask only the follow-ups for that goal.
+
+```jsonc
+"rules": [
+  {
+    "conditions": [{ "fieldCode": "goal", "operator": "AnyIn", "value": ["exam"] }],
+    "action": { "type": "show", "fieldCodes": ["exam_date", "exam_score"] }
+  }
+]
+```
+
+- Operators: `AnyIn` / `NoneIn`, with `value` an array of option codes (`TrueFalse` uses `"true"` / `"false"`). `Eq` also works on `TrueFalse`.
+- All `conditions` in one rule must hold (AND). For OR, write separate rules with the same `action`.
+- Every question in `fieldCodes` must come **after** all of that rule's condition questions in `fields`.
+- A question targeted by a `show` rule stays hidden until one of its `show` rules fires; a question targeted only by `hide` rules stays visible until one fires. The same conditions can't both show and hide one question.
+- A hidden question is skipped entirely: it isn't required, it casts no vote, and any condition that points at it never holds, so hiding cascades down a chain of rules.
+- Using any rule switches the result to the vote-share tally described under **Scoring**.
+
 ## Common mistakes
 
 These wrong patterns get reached for out of habit; the server rejects them with HTTP 400. The formats above are correct — match them exactly.

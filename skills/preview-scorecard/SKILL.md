@@ -200,6 +200,25 @@ A dimension's score is its own `formula`, evaluated over the same question codes
 
 `score` remains the option's contribution to the overall total; `dimensionScores[].score` replaces it while the named dimension's formula runs (a dimension with no entry just uses `score`). Every `code` must match a dimension in `dimensionAnalysis.dimensions`, and one option can't list the same dimension twice.
 
+## Conditional rules (optional)
+
+`rules` shows or hides later questions based on earlier answers — ask about team habits only to people who said they manage a team, for example:
+
+```jsonc
+"rules": [
+  {
+    "conditions": [{ "fieldCode": "manages", "operator": "AnyIn", "value": ["yes"] }],
+    "action": { "type": "show", "fieldCodes": ["team_size", "one_on_ones"] }
+  }
+]
+```
+
+- Operators: `AnyIn` / `NoneIn` for `SingleCheck`, `MultiCheck`, `DropDown`, `Cascade`, `Rate` and `TrueFalse`, with `value` an array of option codes (`Rate` uses its star values `"1"`, `"2"`, …; `TrueFalse` uses `"true"` / `"false"`). `Eq` also works on `TrueFalse`. For `NumberField`, `DateField` and `TimeField`, use `Gt` / `Gte` / `Lt` / `Lte` with a number, or `Between` with `[min, max]`.
+- All `conditions` in one rule must hold (AND). For OR, write separate rules with the same `action`.
+- Every question in `fieldCodes` must come **after** all of that rule's condition questions in `fields`.
+- A question targeted by a `show` rule stays hidden until one of its `show` rules fires; a question targeted only by `hide` rules stays visible until one fires. The same conditions can't both show and hide one question.
+- A hidden question is skipped entirely: it isn't required, it scores nothing and drops out of the `formula`, and any condition that points at it never holds, so hiding cascades down a chain of rules.
+
 ## Common mistakes
 
 These wrong patterns get reached for out of habit; the server rejects them with HTTP 400. The formats above are correct — match them exactly.

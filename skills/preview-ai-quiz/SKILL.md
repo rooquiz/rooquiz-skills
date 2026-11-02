@@ -126,9 +126,9 @@ Each field is `{ type, code, name, ... }`. In an AI quiz you can use:
   | `image` | photos | looks at them | 10 MB |
   | `audio` | a recording | reads a transcript | 10 MB, 3 min |
   | `video` | a clip | reads a transcript | 20 MB, 60 s |
-  | `document` | a PDF / Office file | reads the extracted text | 10 MB |
+  | `document` | PDF, `.docx` / `.xlsx` / `.pptx`, or plain text / CSV / Markdown (not legacy `.doc` / `.xls`) | reads the extracted text | 10 MB |
 
-  Optional `maxFiles` (1–3, default 3). **At most 2 `Attachment` questions per quiz** (any mix of kinds). `acceptGroups` is ignored once `kind` is set.
+  Optional `maxFiles` (1–3, default 3). **At most 2 `Attachment` questions per quiz** (any mix of kinds), and a taker can submit **at most 3 files in total** across them — two questions with `maxFiles: 3` each still allow only 3. `acceptGroups` is ignored once `kind` is set.
 - **Display only**: `Statement` (`content`), `Breaker` (page break / divider), `Swiper` (image carousel, `items`)
 
 `Ordering` and `RandomQuestion` are **not** allowed. Optional shared props on any field: `required`, `description`, `hidden`, `activeColor` (`primary`/`secondary`/`accent`/`neutral`), `layout` (`list`/`grid`). Keep it to **20 questions or fewer** (page breaks and display blocks don't count): the preview accepts more, but a longer AI quiz is rejected when you publish it.
@@ -162,9 +162,24 @@ Two parts:
 <art-field data-type="fieldVariable" data-cid="goal"></art-field>
 ```
 
-That tells the AI which answer a sentence is about; the answer itself is not pasted in, since the AI always sees every answer anyway. Only reference **visible input questions** (not `Statement`/`Breaker`/`Swiper`, not `hidden` ones), and use the exact `code`. Write the tag exactly as shown, and do not write `{{code}}` placeholders — the preview stores `instructions` verbatim, so a `{{goal}}` would reach the editor as literal text, not as a variable. Plain text with no tags is accepted, but it only becomes rich text if it starts with a tag such as `<p>`. Allowed markup is basic rich text — `<p>`, `<strong>`, `<em>`, `<ul>`/`<ol>`/`<li>`, `<a href>`. Scripts and event attributes are stripped on save.
+That tells the AI which answer a sentence is about; the answer itself is not pasted in, since the AI always sees every answer anyway. Only reference **visible input questions** (not `Statement`/`Breaker`/`Swiper`, not `hidden` ones), and use the exact `code`. Write the tag exactly as shown, and do not write `{{code}}` placeholders — the preview stores `instructions` verbatim, so a `{{goal}}` would reach the editor as literal text, not as a variable. Plain text with no tags is accepted, but it only becomes rich text if it starts with a tag such as `<p>`. Stick to basic rich text — `<p>`, `<strong>`, `<em>`, `<ul>`/`<ol>`/`<li>`, `<a href>`.
 
 Write instructions the way you would brief an analyst: what to look at, how to weigh it, what sections the report should have, and what to recommend next. The AI also picks its own layout and can chart estimates it makes, so asking for "a short summary, then three priorities, each with one action" works well.
+
+### Result tags (optional)
+
+To sort takers into segments for lead follow-up, add up to **10** tags under `report.outcomeAnalysis.outcomes`. Before writing each report, the AI picks the one tag that fits the taker. Tags are internal: takers never see the tag name, but the team can filter leads by it.
+
+```jsonc
+"outcomeAnalysis": {
+  "outcomes": [
+    { "code": "hot", "name": "Ready to buy", "description": "Has a budget and wants to start within a month." },
+    { "code": "nurture", "name": "Nurture", "description": "Interested, but no budget or timeline yet." }
+  ]
+}
+```
+
+Each tag needs a unique `code` and a `name`. Put the criteria for choosing it in `description`, since that is what the AI reads. An optional `cta` (`{ enabled, type: "link", label, text, url }`, same rules as elsewhere) shows a button under the report of takers who get that tag. The preview does not enforce the 10-tag cap, but publishing does.
 
 ## Common mistakes
 
@@ -217,6 +232,12 @@ The `personalized.theme.name` is matched to the topic (see **Themes** above) —
   ],
   "report": {
     "overallAnalysis": { "title": "Your Skin Report" },
+    "outcomeAnalysis": {
+      "outcomes": [
+        { "code": "routine_ready", "name": "Ready for a routine", "description": "Already uses two or more products and wants to optimize." },
+        { "code": "beginner", "name": "Beginner", "description": "Uses one product or none and needs the basics first." }
+      ]
+    },
     "aiReport": {
       "instructions": "<p>Start with a two-sentence read of the skin, combining <art-field data-type=\"fieldVariable\" data-cid=\"skin_type\"></art-field> with what the photo <art-field data-type=\"fieldVariable\" data-cid=\"photo\"></art-field> shows, if there is one.</p><p>Then review the current routine in <art-field data-type=\"fieldVariable\" data-cid=\"routine\"></art-field>: what to keep, what to drop, and why.</p><p>Finish with a simple morning and evening routine that targets <art-field data-type=\"fieldVariable\" data-cid=\"concerns\"></art-field>, naming ingredient types rather than brands.</p>",
       "style": "Warm and practical. Short sections with bullet points. No medical diagnoses — suggest a dermatologist for anything persistent."
@@ -227,9 +248,8 @@ The `personalized.theme.name` is matched to the topic (see **Themes** above) —
 
 ## Notes & limits
 
-- **Expiry:** previews self-destruct after about **1 hour** (`expiresAt`); the link 404s afterward. To keep one, open it and hit **Publish** in the preview's top bar — that carries this exact quiz (questions, generation instructions, theme) into the RooQuiz editor, prefilled from the preview token.
+- **Expiry:** previews self-destruct after about **1 hour** (`expiresAt`); the link 404s afterward. To keep one, open it and hit **Publish** in the preview's top bar — that carries this exact quiz (questions, generation instructions, result tags, theme) into the RooQuiz editor, prefilled from the preview token.
 - **Rate limit:** anonymous creation is capped at **5 previews per minute** per IP; past that the endpoint answers **429** — wait a minute and retry.
 - **Validation errors:** a 400 nests the details — `errors[0].data.errors[]`, each entry with a `path` and a `message` (e.g. `fields.1.type`). Read those, fix the JSON, retry. Most common: a question type the scene doesn't allow (`Ordering`), a scoring key left on a field, or an `Attachment` with no `kind`. The art-field references in `instructions` are not checked on create — a mistyped code only shows up in the editor after publishing.
 - **What the preview page shows:** a top bar with **Quiz** / **Report** tabs and a **Publish** button. The questionnaire is fully answerable, but **answers are never saved and no AI runs** — submitting just explains preview mode. The **Report** tab renders a *sample* AI report in the form's language to show the layout; it is not generated from your instructions. Real reports start once the quiz is published.
-- **After publishing:** RooQuiz can also give an AI quiz internal **result tags** that the AI assigns to each taker, for filtering leads. The preview doesn't store them — add them in the editor once the quiz is published.
 - **`language` values:** `en_US` `de_DE` `es` `pt_BR` `fr` `zh_CN` (default) `zh_TW` `ja_JP` `ko_KR`.
