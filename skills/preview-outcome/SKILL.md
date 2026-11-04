@@ -84,6 +84,7 @@ That is the complete link — nothing to append. For a self-hosted RooQuiz, swap
 Key points:
 - Every question needs a **unique `code`** (string); option `code`s must be unique within their question. A question/option `code` must be a valid identifier — start with a letter or `_`, then only letters/digits/`_` (no `-`, spaces, or leading digit), max 64 chars, and not a reserved math word (`e`, `E`, `pi`, `PI`, `tau`, `phi`, `i`, `Infinity`, `NaN`, `true`, `false`, `null`, `undefined`). The server rejects violations with HTTP 400.
 - `name` is the question text; `description` is optional helper text.
+- **Rich text is HTML, never Markdown.** The form `description`, a question's `description`, `Statement` `content` and each outcome's `description` render as HTML: write `<p>`, `<strong>`, `<em>`, `<ul>`/`<ol>`/`<li>`, `<a href>`. Markdown such as `**bold**` or `- item` is not rendered as formatting.
 - Unknown top-level fields are silently ignored by the server (no error).
 
 ## Themes
@@ -162,7 +163,7 @@ Two parts are needed:
 Each outcome carries a `code` (referenced by `outcomeScoring`; unique and non-empty) and a display `name`, plus optionally:
 
 - `color` — hex accent for the type;
-- `description` — the result write-up shown to the taker;
+- `description` — the result write-up shown to the taker, as HTML (`<p>`, `<strong>`, …), not Markdown;
 - `image` — an `https` URL used as the result page's hero and as the share image;
 - `cta` — a results-page button, `{ enabled, type: "link", label, text, url }`: `label` is the line above the button (≤100 chars), `text` the button itself (≤30), `url` (≤2048) must be `http`/`https`, and enabling it makes `text` and `url` required. It always opens in a new tab.
 

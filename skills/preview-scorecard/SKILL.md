@@ -84,6 +84,7 @@ That is the complete link — nothing to append. For a self-hosted RooQuiz, swap
 Key points:
 - Every question needs a **unique `code`** (string); option `code`s must be unique within their question. A `code` must be a valid identifier — start with a letter or `_`, then only letters/digits/`_` (no `-`, spaces, or leading digit), max 64 chars, and not a reserved math word (`e`, `E`, `pi`, `PI`, `tau`, `phi`, `i`, `Infinity`, `NaN`, `true`, `false`, `null`, `undefined`). The server rejects violations with HTTP 400. Codes are also what the `formula` references.
 - `name` is the question text; `description` is optional helper text.
+- **Rich text is HTML, never Markdown.** The form `description`, a question's `description`, `Statement` `content`, a level's `description` and `summaryTemplate` render as HTML: write `<p>`, `<strong>`, `<em>`, `<ul>`/`<ol>`/`<li>`, `<a href>`. Markdown such as `**bold**` or `- item` is not rendered as formatting.
 - Unknown top-level fields are silently ignored by the server (no error).
 
 ## Themes
