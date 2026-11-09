@@ -132,7 +132,7 @@ Each field is `{ type, code, name, ... }`. In an AI quiz you can use:
   Optional `maxFiles` (1–3, default 3). **At most 2 `Attachment` questions per quiz** (any mix of kinds), and a taker can submit **at most 3 files in total** across them — two questions with `maxFiles: 3` each still allow only 3. `acceptGroups` is ignored once `kind` is set.
 - **Display only**: `Statement` (`content`), `Breaker` (page break / divider), `Swiper` (image carousel, `items`)
 
-`Ordering` and `RandomQuestion` are **not** allowed. Optional shared props on any field: `required`, `description`, `hidden`, `activeColor` (`primary`/`secondary`/`accent`/`neutral`), `layout` (`list`/`grid`). Keep it to **20 questions or fewer** (page breaks and display blocks don't count): the preview accepts more, but a longer AI quiz is rejected when you publish it.
+`Ordering` is **not** allowed. Optional shared props on any field: `required`, `description`, `hidden`, `activeColor` (`primary`/`secondary`/`accent`/`neutral`), `layout` (`list`/`grid`). Keep it to **20 questions or fewer** (page breaks and display blocks don't count): the preview accepts more, but a longer AI quiz is rejected when you publish it.
 
 ## No scoring
 
