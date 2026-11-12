@@ -7,7 +7,7 @@ description: Create a shareable RooQuiz preview AI quiz — a questionnaire with
 
 POST an AI quiz as JSON to RooQuiz's open preview endpoint and instantly get a **short-lived (~1 hour)**, **browser-openable** preview link. The creation endpoint is public (`access.create => true`), so this needs **no account, login, API key, or credentials** — anything that can make an HTTP request can use it.
 
-An **AI quiz** (`scene: "ai_quiz"`) scores nothing. Its questions only collect answers — choices, free text, numbers, ratings, dates, even uploaded files — and once the quiz is published, an AI reads every answer and writes each taker a personalized report, steered by the **generation instructions** you put in `report.aiReport`. It produces a **temporary preview**, not a permanently published form — the link expires automatically (hit **Publish** on the preview page to carry it into RooQuiz and keep it).
+An **AI quiz** (`scene: "ai_quiz"`) scores nothing. Its questions only collect answers — choices, free text, numbers, ratings, even uploaded files — and once the quiz is published, an AI reads every answer and writes each taker a personalized report, steered by the **generation instructions** you put in `report.aiReport`. It produces a **temporary preview**, not a permanently published form — the link expires automatically (hit **Publish** on the preview page to carry it into RooQuiz and keep it).
 
 Three sibling skills cover the other assessment types — pick the one that matches:
 - **preview-quiz** — a right/wrong assessment where correct answers earn points and the taker gets a graded score.
@@ -119,7 +119,7 @@ Each field is `{ type, code, name, ... }`. In an AI quiz you can use:
 
 - **Choice** (carry `choices: [{ code, value }]`, where `value` is the option label):
   `SingleCheck` (single), `MultiCheck` (multiple; optional `min`/`max`), `DropDown`, `TrueFalse` (no `choices`; optional `trueLabel`/`falseLabel` relabel the two buttons, ≤100 chars each)
-- **Input**: `FillBlank` (free text; optional `multiline`), `NumberField`, `DateField` (needs `precision`: `year` / `month` / `day` / `hour` / `minute`), `TimeField`, `Rate` (needs `steps`, optional `words`)
+- **Input**: `FillBlank` (free text; optional `multiline`), `NumberField`, `Rate` (needs `steps`, optional `words`)
 - **Upload**: `Attachment` — **`kind` is required** and decides what the taker uploads and how the AI reads it:
 
   | `kind` | taker uploads | the AI | per-file limit |

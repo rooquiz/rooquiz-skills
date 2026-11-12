@@ -118,7 +118,7 @@ Each field is `{ type, code, name, ... }`. In a scorecard you can use:
 
 - **Choice** (carry `choices: [{ code, value }]`, where `value` is the option label):
   `SingleCheck` (single), `MultiCheck` (multiple; optional `min`/`max`), `DropDown`, `TrueFalse` (no `choices`; optional `trueLabel`/`falseLabel` relabel the two buttons, ≤100 chars each)
-- **Input**: `NumberField`, `DateField` (needs `precision`), `TimeField`, `Rate` (needs `steps`, optional `words`)
+- **Input**: `NumberField`, `Rate` (needs `steps`, optional `words`)
 - **Collect only** (never scored, and unusable in the `formula`): `FillBlank` (optional `multiline`) for free text — "anything else?", a lead's name or email — and `Attachment` for material the taker uploads (optional `maxFiles` 1–3, `acceptGroups` drawn from `image` / `pdf` / `document` / `spreadsheet`)
 - **Display only** (never scored): `Statement` (`content`), `Breaker` (page break / divider), `Swiper` (image carousel, `items`)
 
@@ -136,9 +136,9 @@ Give each option a point value with **`partialScoring`** (a field-level array, s
 ]
 ```
 
-Each `value` must be one of that question's `choices[].code`s (for `TrueFalse`, which has no `choices`, they are the strings `"true"` and `"false"`). A `Rate` question scores its selected star value by default — add a `partialScoring` entry whose `value` is that star (`"1"`, `"2"`, …) to override it, which is how reverse scoring and non-linear weights are done. A `NumberField` contributes the number itself; a `DateField`/`TimeField` contributes its timestamp.
+Each `value` must be one of that question's `choices[].code`s (for `TrueFalse`, which has no `choices`, they are the strings `"true"` and `"false"`). A `Rate` question scores its selected star value by default — add a `partialScoring` entry whose `value` is that star (`"1"`, `"2"`, …) to override it, which is how reverse scoring and non-linear weights are done. A `NumberField` contributes the number itself.
 
-Only these types produce a score the `formula` can reference: `SingleCheck`, `MultiCheck`, `DropDown`, `TrueFalse`, `Rate`, `NumberField`, `DateField`, `TimeField`. `FillBlank`, `Attachment` and the display-only fields (`Statement`/`Breaker`/`Swiper`) are never scored — keep their codes out of the formula. The per-question scores are combined by the `report.formula` (below).
+Only these types produce a score the `formula` can reference: `SingleCheck`, `MultiCheck`, `DropDown`, `TrueFalse`, `Rate`, `NumberField`. `FillBlank`, `Attachment` and the display-only fields (`Statement`/`Breaker`/`Swiper`) are never scored — keep their codes out of the formula. The per-question scores are combined by the `report.formula` (below).
 
 ## Report configuration
 
@@ -214,7 +214,7 @@ A dimension's score is its own `formula`, evaluated over the same question codes
 ]
 ```
 
-- Operators: `AnyIn` / `NoneIn` for `SingleCheck`, `MultiCheck`, `DropDown`, `Rate` and `TrueFalse`, with `value` an array of option codes (`Rate` uses its star values `"1"`, `"2"`, …; `TrueFalse` uses `"true"` / `"false"`). `Eq` also works on `TrueFalse`. For `NumberField`, `DateField` and `TimeField`, use `Gt` / `Gte` / `Lt` / `Lte` with a number, or `Between` with `[min, max]`.
+- Operators: `AnyIn` / `NoneIn` for `SingleCheck`, `MultiCheck`, `DropDown`, `Rate` and `TrueFalse`, with `value` an array of option codes (`Rate` uses its star values `"1"`, `"2"`, …; `TrueFalse` uses `"true"` / `"false"`). `Eq` also works on `TrueFalse`. For `NumberField`, use `Gt` / `Gte` / `Lt` / `Lte` with a number, or `Between` with `[min, max]`.
 - All `conditions` in one rule must hold (AND). For OR, write separate rules with the same `action`.
 - Every question in `fieldCodes` must come **after** all of that rule's condition questions in `fields`.
 - A question targeted by a `show` rule stays hidden until one of its `show` rules fires; a question targeted only by `hide` rules stays visible until one fires. The same conditions can't both show and hide one question.

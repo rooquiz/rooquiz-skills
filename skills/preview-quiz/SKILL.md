@@ -120,7 +120,7 @@ Each field is `{ type, code, name, ... }`. In a quiz you can use:
 - **Input**: `FillBlank` (optional `multiline`), `NumberField`
 - **Display only** (never scored): `Statement` (`content`), `Breaker` (page break / divider), `Swiper` (image carousel, `items`)
 
-`DateField`, `TimeField`, `Rate` and `Attachment` are **not** allowed in a quiz — a birthday, a rating or an uploaded file has no "correct answer". They belong to the scorecard scene (`preview-scorecard`), and the 400 names the alternative to use. Optional shared props on any field: `required`, `description`, `explain`, `hidden`, `activeColor` (`primary`/`secondary`/`accent`/`neutral`), `layout` (`list`/`grid`).
+`Rate` and `Attachment` are **not** allowed in a quiz — a rating or an uploaded file has no "correct answer". They belong to the scorecard scene (`preview-scorecard`), and the 400 names the alternative to use. Optional shared props on any field: `required`, `description`, `explain`, `hidden`, `activeColor` (`primary`/`secondary`/`accent`/`neutral`), `layout` (`list`/`grid`).
 
 ## Scoring
 
