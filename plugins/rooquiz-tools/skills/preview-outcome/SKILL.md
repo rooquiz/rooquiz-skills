@@ -120,7 +120,7 @@ Each field is `{ type, code, name, ... }`. An outcome test allows **only** these
   `SingleCheck` (single), `MultiCheck` (multiple), `DropDown`, `TrueFalse` (no `choices`; optional `trueLabel`/`falseLabel` relabel the two buttons, ≤100 chars each)
 - **Display only** (never scored): `Statement` (`content`), `Breaker` (page break / divider), `Swiper` (image carousel, `items`)
 
-Input/number/date/time/`Rate`/`FillBlank`/`Ordering`/`Cascade`/`Attachment` are **not** allowed here — an outcome test only votes via the choice types above, and free text, a number or an uploaded file can't vote. Optional shared props on any field: `required`, `description`, `explain`, `hidden`, `activeColor` (`primary`/`secondary`/`accent`/`neutral`), `layout` (`list`/`grid`).
+Input/number/date/time/`Rate`/`FillBlank`/`Ordering`/`Attachment` are **not** allowed here — an outcome test only votes via the choice types above, and free text, a number or an uploaded file can't vote. Optional shared props on any field: `required`, `description`, `explain`, `hidden`, `activeColor` (`primary`/`secondary`/`accent`/`neutral`), `layout` (`list`/`grid`).
 
 ## Scoring
 

@@ -118,7 +118,7 @@ The full daisyUI theme set also renders (e.g. `emerald`, `dracula`, `retro`, `no
 Each field is `{ type, code, name, ... }`. In an AI quiz you can use:
 
 - **Choice** (carry `choices: [{ code, value }]`, where `value` is the option label):
-  `SingleCheck` (single), `MultiCheck` (multiple; optional `min`/`max`), `DropDown`, `Cascade`, `TrueFalse` (no `choices`; optional `trueLabel`/`falseLabel` relabel the two buttons, ≤100 chars each)
+  `SingleCheck` (single), `MultiCheck` (multiple; optional `min`/`max`), `DropDown`, `TrueFalse` (no `choices`; optional `trueLabel`/`falseLabel` relabel the two buttons, ≤100 chars each)
 - **Input**: `FillBlank` (free text; optional `multiline`), `NumberField`, `DateField` (needs `precision`: `year` / `month` / `day` / `hour` / `minute`), `TimeField`, `Rate` (needs `steps`, optional `words`)
 - **Upload**: `Attachment` — **`kind` is required** and decides what the taker uploads and how the AI reads it:
 
